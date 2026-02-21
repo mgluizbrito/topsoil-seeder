@@ -1,6 +1,6 @@
 package io.github.mgluizbrito.topsoil_seeder.yaml;
 
-import io.github.mgluizbrito.jpa_autoseeder_core.exception.ReferenceNotFound;
+import io.github.mgluizbrito.topsoil_seeder.exception.ReferenceNotFound;
 
 import java.util.HashMap;
 import java.util.List;
