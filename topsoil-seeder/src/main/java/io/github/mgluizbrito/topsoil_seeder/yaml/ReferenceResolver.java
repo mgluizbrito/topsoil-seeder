@@ -29,7 +29,7 @@ public class ReferenceResolver {
             if (value instanceof String str && str.startsWith("@")) {
                 String yamlId = str.substring(1); // Remove the "@"
 
-                if (!idRegistry.containsKey(yamlId)) throw new ReferenceNotFound("reference not found: " + yamlId);
+                if (!idRegistry.containsKey(yamlId)) throw new ReferenceNotFound(yamlId);
                 entry.setValue(idRegistry.get(yamlId));
 
             } else {
@@ -46,7 +46,7 @@ public class ReferenceResolver {
             if (item instanceof String str && str.startsWith("@")) {
                 String yamlId = str.substring(1);
 
-                if (!idRegistry.containsKey(yamlId)) throw new ReferenceNotFound("reference not found: " + yamlId);
+                if (!idRegistry.containsKey(yamlId)) throw new ReferenceNotFound(yamlId);
                 list.set(i, idRegistry.get(yamlId));
 
             } else {

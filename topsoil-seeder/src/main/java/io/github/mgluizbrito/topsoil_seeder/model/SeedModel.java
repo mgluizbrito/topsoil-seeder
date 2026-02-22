@@ -10,7 +10,7 @@ import java.util.Map;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class EntityYaml {
+public class SeedModel {
 
     private String entity;
     private List<Map<String, Object>> data;
