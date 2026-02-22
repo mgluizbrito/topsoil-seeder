@@ -21,7 +21,7 @@
         <java.version>17</java.version>
 
         <topsoil-seeder.version>0.0.1</topsoil-seeder.version>
-        <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
+        <jakarta.persistence.version>3.2.0</jakarta.persistence.version>
         <lombok.version>1.18.42</lombok.version>
     </properties>
 
@@ -32,6 +32,13 @@
                 <groupId>io.github.mgluizbrito</groupId>
                 <artifactId>topsoil-seeder</artifactId>
                 <version>${topsoil-seeder.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>${jakarta.persistence.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- YAML -->
