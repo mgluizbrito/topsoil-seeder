@@ -8,20 +8,20 @@ import java.util.Map;
 
 public class ReferenceResolver {
 
-    private static final Map<String, Object> idRegistry = new HashMap<>();
+    private final Map<String, Object> idRegistry = new HashMap<>();
 
-    public static void registerReference(String yamlId, Object realId) {
+    public void registerReference(String yamlId, Object realId) {
         idRegistry.put(yamlId, realId);
     }
 
     @SuppressWarnings("unchecked")
-    public static void resolveReferences(Object data) {
+    public void resolveReferences(Object data) {
 
-        if (data instanceof Map) resolveMapRefences((Map<String, Object>) data);
-        if (data instanceof List) resolveListRefences((List<Object>) data);
+        if (data instanceof Map) this.resolveMapRefences((Map<String, Object>) data);
+        if (data instanceof List) this.resolveListRefences((List<Object>) data);
     }
 
-    private static void resolveMapRefences(Map<String, Object> map) {
+    private void resolveMapRefences(Map<String, Object> map) {
 
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             Object value = entry.getValue();
@@ -38,7 +38,7 @@ public class ReferenceResolver {
         }
     }
 
-    private static void resolveListRefences(List<Object> list) {
+    private void resolveListRefences(List<Object> list) {
 
         for (int i = 0; i < list.size(); i++) {
             Object item = list.get(i);
