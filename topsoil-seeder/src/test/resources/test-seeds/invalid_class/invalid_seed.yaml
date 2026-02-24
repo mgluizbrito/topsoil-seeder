@@ -1,0 +1,3 @@
+- entity: io.github.mgluizbrito.NonExistentClass
+  data:
+    - name: "This will fail"

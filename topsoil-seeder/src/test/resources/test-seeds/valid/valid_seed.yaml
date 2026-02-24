@@ -1,0 +1,8 @@
+entity: io.github.mgluizbrito.topsoil_seeder.engine.SeedEngineTestEntity
+data:
+  - _id: entity-1
+    name: "First Test Entity"
+    priority: 1
+  - _id: entity-2
+    name: "Second Test Entity"
+    priority: 2
