@@ -1,5 +1,6 @@
 package io.github.mgluizbrito.topsoil_seeder.engine;
 
+import io.github.mgluizbrito.topsoil_seeder.exception.EntityClassNotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -69,9 +70,8 @@ class SeedEngineTest {
 
         // Act & Assert
         assertThatThrownBy(() -> engine.seed("test-seeds/invalid_class"))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Database population failed")
-                .hasCauseInstanceOf(ClassNotFoundException.class);
+                .isInstanceOf(EntityClassNotFoundException.class)
+                .hasMessageContaining("not found");
 
         verify(transaction).begin();
         verify(transaction).rollback();

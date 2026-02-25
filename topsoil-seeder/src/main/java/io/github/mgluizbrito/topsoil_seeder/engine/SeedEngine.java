@@ -1,5 +1,7 @@
 package io.github.mgluizbrito.topsoil_seeder.engine;
 
+import io.github.mgluizbrito.topsoil_seeder.exception.EntityClassNotFoundException;
+import io.github.mgluizbrito.topsoil_seeder.exception.ReferenceNotFound;
 import io.github.mgluizbrito.topsoil_seeder.mapper.EntityMapper;
 import io.github.mgluizbrito.topsoil_seeder.yaml.ReferenceResolver;
 import io.github.mgluizbrito.topsoil_seeder.yaml.YamlParser;
@@ -8,9 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import lombok.NonNull;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -29,6 +29,8 @@ public class SeedEngine {
     private final EntityMapper mapper;
     private final ReferenceResolver resolver;
 
+    private String basePackage;
+
     /**
      * Constructs a SeedEngine using the provided EntityManager.
      *
@@ -45,6 +47,7 @@ public class SeedEngine {
      * classpath.
      * Scans for all `.yaml` and `.yml` files within "src/main/resources/seeds".
      *
+     * @throws EntityClassNotFoundException if an entity in YAML does not exist in any class within the set basePackage
      * @throws RuntimeException if a critical error occurs during file reading,
      *                          parsing, or database persistence.
      */
@@ -57,6 +60,7 @@ public class SeedEngine {
      *
      * @param resourceFolder The folder path relative to "src/main/resources" (e.g.,
      *                       "my-seeds").
+     * @throws EntityClassNotFoundException if an entity in YAML does not exist in any class within the set basePackage
      * @throws RuntimeException if a critical error occurs during file reading,
      *                          parsing, or database persistence.
      */
@@ -75,17 +79,19 @@ public class SeedEngine {
 
             // 3. Process: Iterates over each entity block defined in the YAML
             // configurations
-            for (Map<String, Object> block : yamlData)
-                processEntityBlock(block);
+            for (Map<String, Object> block : yamlData) processEntityBlock(block);
 
             transaction.commit();
             logger.info("Seeding completed successfully.");
 
-        } catch (IOException | URISyntaxException | ReflectiveOperationException e) {
-
-            if (transaction.isActive()) transaction.rollback();
+        } catch (EntityClassNotFoundException | ReferenceNotFound e) {
+            logger.log(Level.SEVERE, "Critical error during seeding. Operation aborted.", e);
+            throw e;
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "Critical error during seeding. Operation aborted.", e);
             throw new RuntimeException("Database population failed.", e);
+        }finally {
+            if (transaction.isActive()) transaction.rollback();
         }
     }
 
@@ -99,7 +105,7 @@ public class SeedEngine {
      *                                      fails.
      */
     @SuppressWarnings("unchecked")
-    private void processEntityBlock(@NonNull Map<String, Object> block) throws ReflectiveOperationException {
+    private void processEntityBlock(@NonNull Map<String, Object> block) throws ReflectiveOperationException, ReferenceNotFound {
         String entityClassName = (String) block.get("entity");
         List<Map<String, Object>> records = (List<Map<String, Object>>) block.get("data");
 
@@ -108,7 +114,7 @@ public class SeedEngine {
             return;
         }
 
-        Class<?> clazz = Class.forName(entityClassName);
+        Class<?> clazz = resolveClassPackage(entityClassName);
         logger.info("Processing " + records.size() + " records for entity: " + entityClassName);
 
         for (Map<String, Object> data : records) {
@@ -133,6 +139,39 @@ public class SeedEngine {
                 resolver.registerReference(yamlId, entity);
                 logger.fine("Registered reference mapping: " + yamlId + " -> " + realId);
             }
+        }
+    }
+
+    /**
+     * -- SETTER --
+     *  Defines the base package where entities are located.
+     *  Allows you to use just "User" in YAML instead of "com.example.model.User".
+     */
+    public void setBasePackage(String basePackage) {
+        logger.config("Base entities package set to: " + basePackage);
+        this.basePackage = basePackage;
+    }
+
+    /**
+     * Try to load the class in two ways:
+     * 1. By the full name provided.
+     * 2. Prefixing with basePackage (if configured).
+     */
+    private @NonNull Class<?> resolveClassPackage(String entityName) {
+        try {
+            return Class.forName(entityName);
+
+        } catch (ClassNotFoundException e) {
+
+            if (basePackage != null && !entityName.contains(".")) {
+                try {
+                    return Class.forName(basePackage + "." + entityName);
+
+                } catch (ClassNotFoundException e2) {
+                    throw new EntityClassNotFoundException(entityName, basePackage);
+                }
+            }
+            throw new EntityClassNotFoundException(entityName);
         }
     }
 }
