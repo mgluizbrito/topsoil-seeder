@@ -67,6 +67,7 @@ public class YamlResourcesScanner {
             try (Stream<Path> walk = Files.walk(myPath, 1)) {
                 walk.filter(Files::isRegularFile)
                         .filter(p -> p.toString().endsWith(".yaml") || p.toString().endsWith(".yml"))
+                        .sorted()
                         .forEach(p -> {
 
                             // Using the classLoader to open the stream guarantees full compatibility.
@@ -74,8 +75,7 @@ public class YamlResourcesScanner {
                             // understand.
                             String resourcePath = path + "/" + p.getFileName().toString();
                             InputStream is = classLoader.getResourceAsStream(resourcePath);
-                            if (is != null)
-                                streams.add(is);
+                            if (is != null) streams.add(is);
                         });
             } finally {
                 // IMPORTANT: We must close the file system ONLY if we created a new one for a
