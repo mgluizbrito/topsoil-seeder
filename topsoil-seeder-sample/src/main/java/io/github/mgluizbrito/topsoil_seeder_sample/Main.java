@@ -1,17 +1,49 @@
 package io.github.mgluizbrito.topsoil_seeder_sample;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import io.github.mgluizbrito.topsoil_seeder.engine.SeedEngine;
+import io.github.mgluizbrito.topsoil_seeder_sample.model.Employee;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import org.h2.tools.Server;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.println("Hello and welcome!");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        // 1. Start JPA (What any app does)
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("sample-unit");
+        EntityManager em = emf.createEntityManager();
+
+
+        // 2. USING THE LIB
+        try {
+            Server server = Server.createWebServer("-webAllowOthers", "-webPort", "8082").start();
+
+            SeedEngine engine = new SeedEngine(em);
+            engine.setBasePackage("io.github.mgluizbrito.topsoil_seeder_sample.model");
+            engine.seed();
+
+            System.out.println("--- SEEDING FINISHED ---");
+
+            // 3. Check the database to see if the data is there
+            em.createQuery("SELECT e FROM Employee e", Employee.class)
+                    .getResultList()
+                    .forEach(emp -> {
+                        System.out.printf("FUNC: %s | Depto: %s%n",
+                                emp.getName(), emp.getDepartment().getName());
+                    });
+
+            System.out.println("H2 Console available at: " + server.getURL());
+            System.out.println("Press ENTER to exit and close bank H2...");
+            System.in.read();
+
+            server.stop();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            em.close();
+            emf.close();
         }
     }
 }

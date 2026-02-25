@@ -1,0 +1,6 @@
+entity: Department
+data:
+  - _id: dept-tech
+    name: "Technology"
+  - _id: dept-hr
+    name: "Human Resources"
