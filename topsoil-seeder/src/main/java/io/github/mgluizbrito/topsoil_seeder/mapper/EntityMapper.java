@@ -3,7 +3,10 @@ package io.github.mgluizbrito.topsoil_seeder.mapper;
 import lombok.NonNull;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Utility class responsible for translating a map of properties into a fully
@@ -44,6 +47,10 @@ public class EntityMapper {
         try {
             Field field = this.findField(entity.getClass(), fieldName);
             field.setAccessible(true);
+
+            Class<?> targetType = field.getType();
+
+            value = convertValueToObject(value, targetType);
             field.set(entity, value);
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -70,5 +77,38 @@ public class EntityMapper {
                 return findField(clazz.getSuperclass(), fieldName);
             throw e;
         }
+    }
+
+    /**
+     * Converts a primitive value within YAML to a Java Wrapper Object
+     * Need to map more java objects in the future!
+     *
+     * @param value The value to inject.
+     * @param targetType The Wrapper Object contained in the java entity
+     * @return The value wrapped into a java object or the primitive value
+     */
+    private Object convertValueToObject(Object value, Class<?> targetType) {
+        if (value == null) return null;
+        if (targetType.isAssignableFrom(value.getClass())) return value;
+
+        // Fix for BigDecimal
+        if (targetType.equals(BigDecimal.class) && value instanceof Double)
+            return BigDecimal.valueOf((Double) value);
+        if (targetType.equals(BigDecimal.class) && value instanceof Integer)
+            return new BigDecimal((Integer) value);
+
+        // Fix for Long
+        if (targetType == Long.class || targetType == long.class)
+            return Long.valueOf(value.toString());
+
+        // Fix for UUID
+        if (targetType.equals(UUID.class) && value instanceof String)
+            return UUID.fromString((String) value);
+
+        // Fix for LocalDateTime
+        if (targetType == LocalDateTime.class)
+            return LocalDateTime.parse(value.toString());
+
+        return value;
     }
 }
