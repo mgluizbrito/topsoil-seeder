@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>topsoil-seeder</module>
+        <module>topsoil-seeder-core</module>
         <module>topsoil-seeder-sample</module>
     </modules>
 
@@ -20,7 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
 
-        <topsoil-seeder.version>0.0.1</topsoil-seeder.version>
+        <topsoil-seeder.core.version>0.0.1</topsoil-seeder.core.version>
         <lombok.version>1.18.42</lombok.version>
 
         <junit.jupiter.version>5.14.3</junit.jupiter.version>
@@ -39,8 +39,8 @@
 
             <dependency>
                 <groupId>io.github.mgluizbrito</groupId>
-                <artifactId>topsoil-seeder</artifactId>
-                <version>${topsoil-seeder.version}</version>
+                <artifactId>topsoil-seeder-core</artifactId>
+                <version>${topsoil-seeder.core.version}</version>
             </dependency>
 
             <dependency>

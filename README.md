@@ -26,7 +26,7 @@ Add the following dependency to your `pom.xml`:
 ```xml
 <dependency>
     <groupId>io.github.mgluizbrito</groupId>
-    <artifactId>topsoil-seeder</artifactId>
+    <artifactId>topsoil-seeder-core</artifactId>
     <version>0.1.0</version>
 </dependency>
 ```

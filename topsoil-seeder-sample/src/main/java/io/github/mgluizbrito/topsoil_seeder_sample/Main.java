@@ -1,6 +1,6 @@
 package io.github.mgluizbrito.topsoil_seeder_sample;
 
-import io.github.mgluizbrito.topsoil_seeder.engine.SeedEngine;
+import io.github.mgluizbrito.topsoil_seeder_core.engine.SeedEngine;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
