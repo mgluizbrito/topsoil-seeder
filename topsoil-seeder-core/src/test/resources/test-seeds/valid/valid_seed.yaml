@@ -1,4 +1,4 @@
-entity: io.github.mgluizbrito.topsoil_seeder_core.engine.SeedEngineTestEntity
+entity: io.github.mgluizbrito.topsoil_seeder.core.engine.SeedEngineTestEntity
 data:
   - _id: entity-1
     name: "First Test Entity"
