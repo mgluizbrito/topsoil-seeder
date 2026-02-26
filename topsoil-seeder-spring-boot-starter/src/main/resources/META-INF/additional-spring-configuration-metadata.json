@@ -1,0 +1,39 @@
+{
+  "properties": [
+    {
+      "name": "topsoil.seeder.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable or disable automatic database seeding on startup.",
+      "defaultValue": true
+    },
+    {
+      "name": "topsoil.seeder.base-package",
+      "type": "java.lang.String",
+      "description": "The base package where your JPA entities are located. Used to resolve short class names in YAML files.",
+      "deprecation": {
+        "reason": "Ensure this matches your @Entity scan package."
+      }
+    },
+    {
+      "name": "topsoil.seeder.seed-folder",
+      "type": "java.lang.String",
+      "description": "The resource folder containing the YAML seed files.",
+      "defaultValue": "seeds"
+    }
+  ],
+  "hints": [
+    {
+      "name": "topsoil.seeder.seed-folder",
+      "values": [
+        {
+          "value": "seeds",
+          "description": "Default internal resources folder."
+        },
+        {
+          "value": "test-seeds",
+          "description": "Common folder for integration tests."
+        }
+      ]
+    }
+  ]
+}
