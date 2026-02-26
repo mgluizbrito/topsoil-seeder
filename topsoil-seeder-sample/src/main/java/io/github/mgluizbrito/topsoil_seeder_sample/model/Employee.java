@@ -1,10 +1,13 @@
 package io.github.mgluizbrito.topsoil_seeder_sample.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
-@Entity
 @Data
+@Deprecated
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

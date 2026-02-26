@@ -1,0 +1,21 @@
+entity: Sale
+data:
+  - customer: "@customer-01"
+    product: "@p_monitor"
+    quantity: 3
+    saleDate: "2026-02-25T10:00:00"
+
+  - customer: "@customer-03"
+    product: "@p_laptop"
+    quantity: 1
+    saleDate: "2026-02-25T10:00:00"
+
+  - customer: "@customer-02"
+    product: "@p_mouse"
+    quantity: 2
+    saleDate: "2026-02-25T10:00:00"
+
+  - customer: "@customer-01"
+    product: "@p_mouse"
+    quantity: 1
+    saleDate: "2026-02-25T10:00:00"
