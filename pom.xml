@@ -13,6 +13,7 @@
         <module>topsoil-seeder-core</module>
         <module>topsoil-seeder-sample</module>
         <module>topsoil-seeder-spring-boot-starter</module>
+        <module>topsoil-seeder-spring-boot-sample</module>
     </modules>
 
     <properties>
@@ -33,6 +34,8 @@
         <h2.version>2.4.240</h2.version>
 
         <snakeyaml.version>2.2</snakeyaml.version>
+
+        <spring-boot.dependencies.version>4.0.3</spring-boot.dependencies.version>
     </properties>
 
     <dependencyManagement>
@@ -100,26 +103,16 @@
                 <version>${h2.version}</version>
             </dependency>
 
-            <!-- spring boot starter -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-autoconfigure</artifactId>
-                <version>4.0.3</version>
-            </dependency>
+            <!-- spring boot -->
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-configuration-processor</artifactId>
-                <version>4.0.3</version>
-                <optional>true</optional>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jpa</artifactId>
-                <version>2.7.18</version>
-                <scope>provided</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
