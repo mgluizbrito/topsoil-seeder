@@ -9,8 +9,10 @@ import io.github.mgluizbrito.topsoil_seeder.core.yaml.YamlResourcesScanner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import lombok.NonNull;
+import lombok.Setter;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -29,7 +31,9 @@ public class SeedEngine {
     private final EntityMapper mapper;
     private final ReferenceResolver resolver;
 
-    private String basePackage;
+    @Setter
+    private boolean manageTransactions = true;
+    private Map<String, Class<?>> entityClassRegistry;
 
     /**
      * Constructs a SeedEngine using the provided EntityManager.
@@ -65,11 +69,18 @@ public class SeedEngine {
      *                          parsing, or database persistence.
      */
     public void seed(String resourceFolder) {
-        EntityTransaction transaction = manager.getTransaction();
+        EntityTransaction transaction = null;
+
+        if (manageTransactions) {
+            transaction = manager.getTransaction();
+            transaction.begin();
+        }
 
         try {
-            transaction.begin();
             logger.info("Starting seeding process from configuration folder: " + resourceFolder);
+
+            // Initializes the entity registry from the JPA metamodel if not already done
+            initializeRegistry();
 
             // 1. Scan: Finds file names and opens InputStreams for found files
             List<InputStream> yamlStreams = YamlResourcesScanner.loadYamlResources(resourceFolder);
@@ -81,17 +92,19 @@ public class SeedEngine {
             // configurations
             for (Map<String, Object> block : yamlData) processEntityBlock(block);
 
-            transaction.commit();
+            if (manageTransactions && transaction != null) {
+                transaction.commit();
+            }
             logger.info("Seeding completed successfully.");
 
         } catch (EntityClassNotFoundException | ReferenceNotFound e) {
             logger.log(Level.SEVERE, "Critical error during seeding. Operation aborted.", e);
+            if (manageTransactions && transaction != null && transaction.isActive()) transaction.rollback();
             throw e;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Critical error during seeding. Operation aborted.", e);
+            if (manageTransactions && transaction != null && transaction.isActive()) transaction.rollback();
             throw new RuntimeException("Database population failed.", e);
-        }finally {
-            if (transaction.isActive()) transaction.rollback();
         }
     }
 
@@ -143,35 +156,42 @@ public class SeedEngine {
     }
 
     /**
-     * -- SETTER --
-     *  Defines the base package where entities are located.
-     *  Allows you to use just "User" in YAML instead of "com.example.model.User".
+     * Pre-loads a mapping of simple and fully qualified class names to their
+     * actual Entity Types using the JPA Metamodel.
      */
-    public void setBasePackage(String basePackage) {
-        logger.config("Base entities package set to: " + basePackage);
-        this.basePackage = basePackage;
+    private void initializeRegistry() {
+        if (entityClassRegistry == null) {
+            entityClassRegistry = new HashMap<>();
+            for (jakarta.persistence.metamodel.EntityType<?> entityType : manager.getMetamodel().getEntities()) {
+                Class<?> javaType = entityType.getJavaType();
+                if (javaType != null) {
+                    entityClassRegistry.put(javaType.getSimpleName(), javaType);
+                    entityClassRegistry.put(javaType.getName(), javaType);
+                }
+            }
+        }
     }
 
     /**
-     * Try to load the class in two ways:
-     * 1. By the full name provided.
-     * 2. Prefixing with basePackage (if configured).
+     * Try to load the class by checking the loaded Metamodel registry.
+     * Supports looking up by Simple Name or Fully Qualified Name.
      */
     private @NonNull Class<?> resolveClassPackage(String entityName) {
-        try {
-            return Class.forName(entityName);
-
-        } catch (ClassNotFoundException e) {
-
-            if (basePackage != null && !entityName.contains(".")) {
-                try {
-                    return Class.forName(basePackage + "." + entityName);
-
-                } catch (ClassNotFoundException e2) {
-                    throw new EntityClassNotFoundException(entityName, basePackage);
-                }
-            }
-            throw new EntityClassNotFoundException(entityName);
+        // Fallback to Class.forName if not in registry
+        // The registry requires entities to be properly mapped via @Entity.
+        Class<?> clazz = null;
+        if (entityClassRegistry != null) {
+            clazz = entityClassRegistry.get(entityName);
         }
+        
+        if (clazz == null) {
+            try {
+                return Class.forName(entityName);
+            } catch (ClassNotFoundException e) {
+                throw new EntityClassNotFoundException(entityName);
+            }
+        }
+        
+        return clazz;
     }
 }

@@ -32,11 +32,16 @@ class SeedEngineTest {
     @Mock
     private PersistenceUnitUtil persistenceUnitUtil;
 
+    @Mock
+    private jakarta.persistence.metamodel.Metamodel metamodel;
+
     private SeedEngine engine;
 
     @BeforeEach
     void setUp() {
         when(entityManager.getTransaction()).thenReturn(transaction);
+        lenient().when(entityManager.getMetamodel()).thenReturn(metamodel);
+        lenient().when(metamodel.getEntities()).thenReturn(java.util.Collections.emptySet());
         engine = new SeedEngine(entityManager);
     }
 
