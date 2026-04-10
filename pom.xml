@@ -48,6 +48,12 @@
             </dependency>
 
             <dependency>
+                <groupId>io.github.mgluizbrito</groupId>
+                <artifactId>topsoil-seeder-spring-boot-starter</artifactId>
+                <version>${topsoil-seeder.core.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>jakarta.persistence</groupId>
                 <artifactId>jakarta.persistence-api</artifactId>
                 <version>${jakarta.persistence.version}</version>

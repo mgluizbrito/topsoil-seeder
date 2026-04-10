@@ -9,11 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class TopsoilSeederProperties {
 
-    /**
-     * Base package for JPA entities (e.g. 'com.example.model').
-     */
-    private String basePackage;
-
 
     /**
      * Folder in resources containing YAML files.

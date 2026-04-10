@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @AutoConfiguration
 @EnableConfigurationProperties(TopsoilSeederProperties.class)
@@ -16,18 +17,22 @@ public class TopsoilSeederAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SeedEngine seedEngine(EntityManager entityManager, TopsoilSeederProperties props) {
-
+    public SeedEngine seedEngine(EntityManager entityManager) {
         SeedEngine engine = new SeedEngine(entityManager);
-        engine.setBasePackage(props.getBasePackage());
-
         return engine;
     }
 
     @Bean
-    public CommandLineRunner autoSeedRunner(SeedEngine engine, TopsoilSeederProperties props) {
+    public CommandLineRunner autoSeedRunner(SeedEngine engine, TopsoilSeederProperties props, TransactionTemplate transactionTemplate) {
         return args -> {
-            engine.seed(props.getSeedFolder());
+            if (props.isEnabled()) {
+                System.out.println("Topsoil Seeder: Starting automatic process...");
+                transactionTemplate.execute(status -> {
+                    engine.setManageTransactions(false);
+                    engine.seed(props.getSeedFolder());
+                    return null;
+                });
+            }
         };
     }
 }
