@@ -1,0 +1,25 @@
+entity: Product
+data:
+  - _id: p_laptop
+    sku: "LAP-TOP-G15"
+    name: "Notebook Gamer G15"
+    description: "Intel Core i7 - 16GB RAM - RTX 3060"
+    price: 5499.90
+    stockQuantity: 15
+    active: true
+
+  - _id: p_mouse
+    sku: "MOU-LOG-G502"
+    name: "Mouse Logi G502"
+    description: "Optical Mouse - High precision 25k DPI"
+    price: 349.00
+    stockQuantity: 50
+    active: true
+
+  - _id: p_monitor
+    sku: "MON-DEL-4K"
+    name: "Monitor Dell 27 4K"
+    description: "Pro Monitor - 100% sRGB"
+    price: 2800.50
+    stockQuantity: 5
+    active: false

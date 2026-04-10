@@ -19,7 +19,6 @@ public class Main {
             Server server = Server.createWebServer("-webAllowOthers", "-webPort", "8082").start();
 
             SeedEngine engine = new SeedEngine(em);
-            engine.setBasePackage("io.github.mgluizbrito.topsoil_seeder.sample.model");
             engine.seed();
 
             System.out.println("--- SEEDING FINISHED ---");

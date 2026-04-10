@@ -1,0 +1,14 @@
+entity: Customer
+data:
+  - _id: customer-01
+    name: "John Christow"
+    email: "christow@online.com"
+    password: "encripted_pass"
+  - _id: customer-02
+    name: "Edward Angkatell"
+    email: "edd@angkatell.com"
+    password: "encripted_pass"
+  - _id: customer-03
+    name: "Midge Hardcastle"
+    email: "hardmidge@castle.us"
+    password: "encripted_pass"

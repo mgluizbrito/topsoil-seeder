@@ -1,0 +1,8 @@
+entity: Employee
+data:
+  - name: "Vasco da Gama"
+    department: "@dept-tech"
+  - name: "John Doe"
+    department: "@dept-hr"
+  - name: "Varmengo Regattas"
+    department: "@dept-hr"
